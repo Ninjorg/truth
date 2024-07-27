@@ -1,40 +1,44 @@
-const http = require('https');
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
+from datetime import datetime, timedelta
+import logging
 
-const link = 'foxnews.com'; // The website to check bias for
+# Create a custom logger
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
-const options = {
-	method: 'GET',
-	hostname: 'political-bias-database.p.rapidapi.com',
-	port: null,
-	path: '/MBFCdata',
-	headers: {
-		'x-rapidapi-key': 'key',
-		'x-rapidapi-host': 'political-bias-database.p.rapidapi.com'
-	}
-};
+# Set Chrome options without headless mode
+chrome_options = Options()
+chrome_options.add_argument("--window-size=3697,2080")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--disable-extensions")
+chrome_options.add_argument("--start-maximized")
+chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36")
+chrome_options.add_experimental_option("useAutomationExtension", False)
 
-const req = http.request(options, function (res) {
-	const chunks = [];
+# Path to the ChromeDriver executable
+chrome_driver_path = "/chromedriver"  # Replace with the actual path to your ChromeDriver
 
-	res.on('data', function (chunk) {
-		chunks.push(chunk);
-	});
+# Initialize the Service object
+logger.debug("Initializing ChromeDriver service")
+service = Service(executable_path=chrome_driver_path)
 
-	res.on('end', function () {
-		const body = Buffer.concat(chunks);
-		const data = JSON.parse(body.toString());
+# Initialize the WebDriver
+logger.debug("Starting Chrome WebDriver")
+driver = webdriver.Chrome(service=service, options=chrome_options)
 
-		// Find the bias for the given link
-		const siteData = data.find(site => site.url.includes(link));
-
-		if (siteData) {
-			console.log(`The political bias of ${link} is: ${siteData.bias}`);
-            console.log(`The the reporting quality is of ${link} is: ${siteData.factual}`);
-            console.log(`The credibility bias of ${link} is: ${siteData.credibility}`);
-		} else {
-			console.log(`No data found for ${link}`);
-		}
-	});
-});
-
-req.end();
+try:
+    logger.debug("Navigating to the URL")
+    driver.get("https://www.tldrthis.com/#uploadFileSection")
+    logger.debug("URL loaded successfully")
+    # Add your further actions here...
+finally:
+    logger.debug("Closing the browser")
+    driver.wait(100)
+    driver.quit()
