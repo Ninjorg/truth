@@ -1,0 +1,37 @@
+const http = require('https');
+
+const options = {
+	method: 'POST',
+	hostname: 'chatgpt-best-price.p.rapidapi.com',
+	port: null,
+	path: '/v1/chat/completions',
+	headers: {
+		'x-rapidapi-key': 'key',
+		'x-rapidapi-host': 'chatgpt-best-price.p.rapidapi.com',
+		'Content-Type': 'application/json'
+	}
+};
+
+const req = http.request(options, function (res) {
+	const chunks = [];
+
+	res.on('data', function (chunk) {
+		chunks.push(chunk);
+	});
+
+	res.on('end', function () {
+		const body = Buffer.concat(chunks);
+		console.log(body.toString());
+	});
+});
+
+req.write(JSON.stringify({
+  model: 'gpt-3.5-turbo',
+  messages: [
+    {
+      role: 'user',
+      content: 'Detect any bias in this text and then explaiin why it is biased in that way. President Bidens time in the White House is mercifully coming to an end. Hes now officially a lame duck with six months to go. Biden was a victim here of a corrupt Democratic machine (with a complicit media) that thought it could pull off a grand election-year deceit despite Bidens failing cognitive abilities. The establishment and a compliant media convinced millions of primary voters that he was of sound mind and ready to serve four more years. This lust for power put America in danger. How could they be so unpatriotic?'
+    }
+  ]
+}));
+req.end();
