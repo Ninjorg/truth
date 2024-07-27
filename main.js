@@ -1,6 +1,6 @@
 const http = require('https');
 
-const link = 'cnn.com'; // The website to check bias for
+const link = 'foxnews.com'; // The website to check bias for
 
 const options = {
 	method: 'GET',
@@ -8,7 +8,7 @@ const options = {
 	port: null,
 	path: '/MBFCdata',
 	headers: {
-		'x-rapidapi-key': 'your-key',
+		'x-rapidapi-key': 'key',
 		'x-rapidapi-host': 'political-bias-database.p.rapidapi.com'
 	}
 };
@@ -29,6 +29,8 @@ const req = http.request(options, function (res) {
 
 		if (siteData) {
 			console.log(`The political bias of ${link} is: ${siteData.bias}`);
+            console.log(`The the reporting quality is of ${link} is: ${siteData.factual}`);
+            console.log(`The credibility bias of ${link} is: ${siteData.credibility}`);
 		} else {
 			console.log(`No data found for ${link}`);
 		}
