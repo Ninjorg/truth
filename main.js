@@ -1,5 +1,7 @@
 const http = require('https');
 
+const link = 'cnn.com'; // The website to check bias for
+
 const options = {
 	method: 'GET',
 	hostname: 'political-bias-database.p.rapidapi.com',
@@ -20,7 +22,16 @@ const req = http.request(options, function (res) {
 
 	res.on('end', function () {
 		const body = Buffer.concat(chunks);
-		console.log(body.toString());
+		const data = JSON.parse(body.toString());
+
+		// Find the bias for the given link
+		const siteData = data.find(site => site.url.includes(link));
+
+		if (siteData) {
+			console.log(`The political bias of ${link} is: ${siteData.bias}`);
+		} else {
+			console.log(`No data found for ${link}`);
+		}
 	});
 });
 
